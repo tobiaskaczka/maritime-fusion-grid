@@ -1,0 +1,77 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.code-workspace
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+coverage/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Local databases and caches
+*.sqlite
+*.sqlite3
+*.db
+*.duckdb
+.cache/
+cache/
+tmp/
+temp/
+
+# OSINT and geospatial working data
+data/raw/
+data/cache/
+data/exports/
+tiles/
+tile-cache/
+*.mbtiles
+*.pmtiles
+*.gpkg
+
+# Generated artifacts
+reports/
+exports/
+screenshots/
