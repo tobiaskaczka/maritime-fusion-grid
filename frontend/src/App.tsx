@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LayerControl } from './components/LayerControl'
 import { MaritimeMap } from './map/MaritimeMap'
+import type { GridCell } from './types/grid'
 
 export default function App() {
   const [aisEnabled, setAisEnabled] = useState(true)
@@ -9,6 +10,7 @@ export default function App() {
   const [nightLightsColor, setNightLightsColor] = useState('#f5df00')
   const [radarEnabled, setRadarEnabled] = useState(false)
   const [radarColor, setRadarColor] = useState('#c084fc')
+  const [selectedCell, setSelectedCell] = useState<GridCell | null>(null)
 
   return (
     <main className="app-shell">
@@ -50,16 +52,42 @@ export default function App() {
       </aside>
 
       <section className="map-region" aria-label="Global maritime activity map">
-        <MaritimeMap />
+        <MaritimeMap
+          aisEnabled={aisEnabled}
+          aisColor={aisColor}
+          onSelectCell={setSelectedCell}
+        />
       </section>
 
       <aside className="details-panel" aria-label="Selected cell details">
         <p className="eyebrow">Selection</p>
-        <h2>No cell selected</h2>
-        <p>
-          Click a grid cell to inspect source contributions, detections, and
-          evidence notes.
-        </p>
+        {selectedCell ? (
+          <>
+            <h2>{selectedCell.properties.id}</h2>
+            <dl className="cell-details">
+              <div>
+                <dt>Source</dt>
+                <dd>AIS</dd>
+              </div>
+              <div>
+                <dt>Activity score</dt>
+                <dd>{Math.round(selectedCell.properties.score * 100)}%</dd>
+              </div>
+              <div>
+                <dt>Positions</dt>
+                <dd>{selectedCell.properties.detectionCount}</dd>
+              </div>
+            </dl>
+          </>
+        ) : (
+          <>
+            <h2>No cell selected</h2>
+            <p>
+              Click a grid cell to inspect source contributions, detections,
+              and evidence notes.
+            </p>
+          </>
+        )}
       </aside>
     </main>
   )
