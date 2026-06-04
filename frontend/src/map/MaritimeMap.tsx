@@ -3,13 +3,13 @@ import { GeoJsonLayer } from '@deck.gl/layers'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { aisGridCells } from '../fixtures/gridCells'
 import type { GridCell, GridCellProperties } from '../types/grid'
 import './MaritimeMap.css'
 
 type MaritimeMapProps = {
   aisEnabled: boolean
   aisColor: string
+  aisGridCells: GridCell[]
   onSelectCell: (cell: GridCell) => void
 }
 
@@ -26,6 +26,7 @@ function hexToRgb(hex: string): [number, number, number] {
 export function MaritimeMap({
   aisEnabled,
   aisColor,
+  aisGridCells,
   onSelectCell,
 }: MaritimeMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
@@ -110,7 +111,7 @@ export function MaritimeMap({
       : []
 
     overlay.setProps({ layers })
-  }, [aisColor, aisEnabled, onSelectCell])
+  }, [aisColor, aisEnabled, aisGridCells, onSelectCell])
 
   return (
     <div className="map-view">

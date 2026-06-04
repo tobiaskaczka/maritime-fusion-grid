@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getGridCells } from './api/gridApi'
 import { LayerControl } from './components/LayerControl'
 import { MaritimeMap } from './map/MaritimeMap'
 import type { GridCell } from './types/grid'
@@ -10,7 +11,16 @@ export default function App() {
   const [nightLightsColor, setNightLightsColor] = useState('#f5df00')
   const [radarEnabled, setRadarEnabled] = useState(false)
   const [radarColor, setRadarColor] = useState('#c084fc')
+  const [aisGridCells, setAisGridCells] = useState<GridCell[]>([])
   const [selectedCell, setSelectedCell] = useState<GridCell | null>(null)
+
+  useEffect(() => {
+    getGridCells('ais')
+      .then(setAisGridCells)
+      .catch((error: unknown) => {
+        console.error('Failed to load AIS grid cells', error)
+      })
+  }, [])
 
   return (
     <main className="app-shell">
@@ -55,6 +65,7 @@ export default function App() {
         <MaritimeMap
           aisEnabled={aisEnabled}
           aisColor={aisColor}
+          aisGridCells={aisGridCells}
           onSelectCell={setSelectedCell}
         />
       </section>
