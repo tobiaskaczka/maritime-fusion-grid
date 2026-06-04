@@ -1,0 +1,49 @@
+{
+  "version": 8,
+  "name": "Maritime Dark",
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "sources": {
+    "maplibre": {
+      "type": "vector",
+      "url": "https://demotiles.maplibre.org/tiles/tiles.json"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#0A1319"
+      }
+    },
+    {
+      "id": "countries-fill",
+      "type": "fill",
+      "source": "maplibre",
+      "source-layer": "countries",
+      "paint": {
+        "fill-color": "#374E5E"
+      }
+    },
+    {
+      "id": "geolines",
+      "type": "line",
+      "source": "maplibre",
+      "source-layer": "geolines",
+      "filter": [
+        "!=",
+        "name",
+        "International Date Line"
+      ],
+      "paint": {
+        "line-color": "#4a4a4a",
+        "line-width": 0.7,
+        "line-opacity": 0.45,
+        "line-dasharray": [
+          3,
+          4
+        ]
+      }
+    }
+  ]
+}
