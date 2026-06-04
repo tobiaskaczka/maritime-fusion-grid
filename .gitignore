@@ -29,12 +29,14 @@ pnpm-debug.log*
 # Node / frontend
 node_modules/
 dist/
+dist-ssr/
 build/
 .next/
 .nuxt/
 .svelte-kit/
 .vite/
 coverage/
+*.local
 
 # Python
 __pycache__/
