@@ -36,7 +36,7 @@ export default function App() {
             enabled={nightLightsEnabled}
             onToggle={() => setNightLightsEnabled((enabled) => !enabled)}
             color={nightLightsColor}
-            values={['3', '12', '25', '42', '63+']}
+            values={['1', '10', '25', '50', '100+']}
             onColorChange={setNightLightsColor}
           />
           <LayerControl
@@ -45,7 +45,7 @@ export default function App() {
             enabled={radarEnabled}
             onToggle={() => setRadarEnabled((enabled) => !enabled)}
             color={radarColor}
-            values={['1', '5', '15', '30', '50+']}
+            values={['1', '10', '25', '50', '100+']}
             onColorChange={setRadarColor}
           />
         </div>
