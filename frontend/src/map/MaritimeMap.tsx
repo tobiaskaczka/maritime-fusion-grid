@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GeoJsonLayer } from '@deck.gl/layers'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import maplibregl from 'maplibre-gl'
@@ -30,6 +30,10 @@ export function MaritimeMap({
 }: MaritimeMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
   const overlayRef = useRef<MapboxOverlay | null>(null)
+  const [cursorCoordinates, setCursorCoordinates] = useState<{
+    latitude: number
+    longitude: number
+  } | null>(null)
 
   useEffect(() => {
     if (!mapContainerRef.current) {
@@ -49,6 +53,17 @@ export function MaritimeMap({
     const overlay = new MapboxOverlay({ interleaved: false, layers: [] })
     map.addControl(overlay)
     overlayRef.current = overlay
+
+    map.on('mousemove', (event) => {
+      setCursorCoordinates({
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+      })
+    })
+
+    map.getCanvas().addEventListener('mouseleave', () => {
+      setCursorCoordinates(null)
+    })
 
     return () => {
       overlayRef.current = null
@@ -97,5 +112,15 @@ export function MaritimeMap({
     overlay.setProps({ layers })
   }, [aisColor, aisEnabled, onSelectCell])
 
-  return <div className="map-shell" ref={mapContainerRef} />
+  return (
+    <div className="map-view">
+      <div className="map-shell" ref={mapContainerRef} />
+      {cursorCoordinates && (
+        <div className="coordinate-readout">
+          <span>LAT {cursorCoordinates.latitude.toFixed(4)}</span>
+          <span>LON {cursorCoordinates.longitude.toFixed(4)}</span>
+        </div>
+      )}
+    </div>
+  )
 }
