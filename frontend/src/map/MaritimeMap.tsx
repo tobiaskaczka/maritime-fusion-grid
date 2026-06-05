@@ -10,6 +10,9 @@ type MaritimeMapProps = {
   aisEnabled: boolean
   aisColor: string
   aisGridCells: GridCell[]
+  nightLightsEnabled: boolean
+  nightLightsColor: string
+  nightLightsGridCells: GridCell[]
   onSelectCell: (cell: GridCell) => void
 }
 
@@ -23,10 +26,48 @@ function hexToRgb(hex: string): [number, number, number] {
   ]
 }
 
+function createGridLayer(
+  id: string,
+  data: GridCell[],
+  color: string,
+  onSelectCell: (cell: GridCell) => void,
+) {
+  const [red, green, blue] = hexToRgb(color)
+
+  return new GeoJsonLayer<GridCellProperties>({
+    id,
+    data,
+    filled: true,
+    stroked: true,
+    pickable: true,
+    getFillColor: (cell) => [
+      red,
+      green,
+      blue,
+      Math.round(35 + cell.properties.score * 190),
+    ],
+    getLineColor: [red, green, blue, 210],
+    getLineWidth: 1,
+    lineWidthUnits: 'pixels',
+    onClick: ({ object }) => {
+      if (object) {
+        onSelectCell(object)
+      }
+    },
+    updateTriggers: {
+      getFillColor: color,
+      getLineColor: color,
+    },
+  })
+}
+
 export function MaritimeMap({
   aisEnabled,
   aisColor,
   aisGridCells,
+  nightLightsEnabled,
+  nightLightsColor,
+  nightLightsGridCells,
   onSelectCell,
 }: MaritimeMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
@@ -79,39 +120,32 @@ export function MaritimeMap({
       return
     }
 
-    const [red, green, blue] = hexToRgb(aisColor)
-    const layers = aisEnabled
-      ? [
-          new GeoJsonLayer<GridCellProperties>({
-            id: 'ais-grid',
-            data: aisGridCells,
-            filled: true,
-            stroked: true,
-            pickable: true,
-            getFillColor: (cell) => [
-              red,
-              green,
-              blue,
-              Math.round(35 + cell.properties.score * 190),
-            ],
-            getLineColor: [red, green, blue, 210],
-            getLineWidth: 1,
-            lineWidthUnits: 'pixels',
-            onClick: ({ object }) => {
-              if (object) {
-                onSelectCell(object)
-              }
-            },
-            updateTriggers: {
-              getFillColor: aisColor,
-              getLineColor: aisColor,
-            },
-          }),
-        ]
-      : []
+    const layers = [
+      ...(aisEnabled
+        ? [createGridLayer('ais-grid', aisGridCells, aisColor, onSelectCell)]
+        : []),
+      ...(nightLightsEnabled
+        ? [
+            createGridLayer(
+              'night-lights-grid',
+              nightLightsGridCells,
+              nightLightsColor,
+              onSelectCell,
+            ),
+          ]
+        : []),
+    ]
 
     overlay.setProps({ layers })
-  }, [aisColor, aisEnabled, aisGridCells, onSelectCell])
+  }, [
+    aisColor,
+    aisEnabled,
+    aisGridCells,
+    nightLightsColor,
+    nightLightsEnabled,
+    nightLightsGridCells,
+    onSelectCell,
+  ])
 
   return (
     <div className="map-view">

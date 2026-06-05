@@ -1,11 +1,12 @@
 import type { GridCell } from '../types/grid'
+import type { GridSource } from '../types/grid'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(
   /\/$/,
   '',
 )
 
-export async function getGridCells(source: 'ais'): Promise<GridCell[]> {
+export async function getGridCells(source: GridSource): Promise<GridCell[]> {
   const response = await fetch(`${API_BASE_URL}/grid?source=${source}`)
 
   if (!response.ok) {

@@ -2,50 +2,104 @@ import { useEffect, useState } from 'react'
 import { getGridCells } from './api/gridApi'
 import { LayerControl } from './components/LayerControl'
 import { MaritimeMap } from './map/MaritimeMap'
-import type { GridCell } from './types/grid'
+import type { GridCell, GridSource } from './types/grid'
+
+type ApiGridSource = Extract<GridSource, 'ais' | 'night-lights'>
+type GridStatus = 'loading' | 'ready' | 'error'
+
+const SOURCE_LABELS: Record<GridSource, string> = {
+  ais: 'AIS',
+  'night-lights': 'Night lights',
+  radar: 'SAR / radar',
+}
 
 export default function App() {
-  const [aisEnabled, setAisEnabled] = useState(true)
+  const [aisEnabled, setAisEnabled] = useState(false)
   const [aisColor, setAisColor] = useState('#38bdf8')
   const [nightLightsEnabled, setNightLightsEnabled] = useState(false)
   const [nightLightsColor, setNightLightsColor] = useState('#f5df00')
   const [radarEnabled, setRadarEnabled] = useState(false)
   const [radarColor, setRadarColor] = useState('#c084fc')
   const [aisGridCells, setAisGridCells] = useState<GridCell[]>([])
-  const [selectedCell, setSelectedCell] = useState<GridCell | null>(null)
-  const [gridStatus, setGridStatus] = useState<'loading' | 'ready' | 'error'>(
-    'loading',
+  const [nightLightsGridCells, setNightLightsGridCells] = useState<GridCell[]>(
+    [],
   )
+  const [selectedCell, setSelectedCell] = useState<GridCell | null>(null)
+  const [gridStatuses, setGridStatuses] = useState<
+    Record<ApiGridSource, GridStatus>
+  >({
+    ais: 'loading',
+    'night-lights': 'loading',
+  })
+  const activeGridStatuses = [
+    aisEnabled ? gridStatuses.ais : null,
+    nightLightsEnabled ? gridStatuses['night-lights'] : null,
+  ].filter((status): status is GridStatus => status !== null)
+  const activeGridStatus: GridStatus = activeGridStatuses.includes('error')
+    ? 'error'
+    : activeGridStatuses.includes('loading')
+      ? 'loading'
+      : 'ready'
 
-  async function retryAisGrid() {
-    setGridStatus('loading')
+  async function loadGridLayer(source: ApiGridSource, cancelled = false) {
+    setGridStatuses((statuses) => ({ ...statuses, [source]: 'loading' }))
 
     try {
-      const cells = await getGridCells('ais')
-      setAisGridCells(cells)
-      setGridStatus('ready')
+      const cells = await getGridCells(source)
+
+      if (!cancelled) {
+        if (source === 'ais') {
+          setAisGridCells(cells)
+        } else {
+          setNightLightsGridCells(cells)
+        }
+
+        setGridStatuses((statuses) => ({ ...statuses, [source]: 'ready' }))
+      }
     } catch (error: unknown) {
-      console.error('Failed to load AIS grid cells', error)
-      setGridStatus('error')
+      if (!cancelled) {
+        console.error(`Failed to load ${source} grid cells`, error)
+        setGridStatuses((statuses) => ({ ...statuses, [source]: 'error' }))
+      }
+    }
+  }
+
+  function retryActiveGridLayers() {
+    if (aisEnabled) {
+      void loadGridLayer('ais')
+    }
+
+    if (nightLightsEnabled) {
+      void loadGridLayer('night-lights')
     }
   }
 
   useEffect(() => {
     let cancelled = false
 
-    getGridCells('ais')
-      .then((cells) => {
+    async function loadInitialGridLayer(source: ApiGridSource) {
+      try {
+        const cells = await getGridCells(source)
+
         if (!cancelled) {
-          setAisGridCells(cells)
-          setGridStatus('ready')
+          if (source === 'ais') {
+            setAisGridCells(cells)
+          } else {
+            setNightLightsGridCells(cells)
+          }
+
+          setGridStatuses((statuses) => ({ ...statuses, [source]: 'ready' }))
         }
-      })
-      .catch((error: unknown) => {
+      } catch (error: unknown) {
         if (!cancelled) {
-          console.error('Failed to load AIS grid cells', error)
-          setGridStatus('error')
+          console.error(`Failed to load ${source} grid cells`, error)
+          setGridStatuses((statuses) => ({ ...statuses, [source]: 'error' }))
         }
-      })
+      }
+    }
+
+    void loadInitialGridLayer('ais')
+    void loadInitialGridLayer('night-lights')
 
     return () => {
       cancelled = true
@@ -96,20 +150,23 @@ export default function App() {
           aisEnabled={aisEnabled}
           aisColor={aisColor}
           aisGridCells={aisGridCells}
+          nightLightsEnabled={nightLightsEnabled}
+          nightLightsColor={nightLightsColor}
+          nightLightsGridCells={nightLightsGridCells}
           onSelectCell={setSelectedCell}
         />
-        {gridStatus !== 'ready' && (
+        {activeGridStatuses.length > 0 && activeGridStatus !== 'ready' && (
           <div
-            className={`grid-status grid-status--${gridStatus}`}
-            role={gridStatus === 'error' ? 'alert' : 'status'}
+            className={`grid-status grid-status--${activeGridStatus}`}
+            role={activeGridStatus === 'error' ? 'alert' : 'status'}
           >
             <span>
-              {gridStatus === 'loading'
-                ? 'Loading AIS grid...'
-                : 'Unable to load AIS grid.'}
+              {activeGridStatus === 'loading'
+                ? 'Loading grid layers...'
+                : 'Unable to load grid layers.'}
             </span>
-            {gridStatus === 'error' && (
-              <button onClick={() => void retryAisGrid()} type="button">
+            {activeGridStatus === 'error' && (
+              <button onClick={retryActiveGridLayers} type="button">
                 Retry
               </button>
             )}
@@ -125,14 +182,14 @@ export default function App() {
             <dl className="cell-details">
               <div>
                 <dt>Source</dt>
-                <dd>AIS</dd>
+                <dd>{SOURCE_LABELS[selectedCell.properties.source]}</dd>
               </div>
               <div>
                 <dt>Activity score</dt>
                 <dd>{Math.round(selectedCell.properties.score * 100)}%</dd>
               </div>
               <div>
-                <dt>Positions</dt>
+                <dt>Detections</dt>
                 <dd>{selectedCell.properties.detectionCount}</dd>
               </div>
             </dl>

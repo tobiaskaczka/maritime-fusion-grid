@@ -1,8 +1,10 @@
 import type { Feature, Polygon } from 'geojson'
 
+export type GridSource = 'ais' | 'night-lights' | 'radar'
+
 export type GridCellProperties = {
   id: string
-  source: 'ais' | 'night-lights' | 'radar'
+  source: GridSource
   score: number
   detectionCount: number
 }
