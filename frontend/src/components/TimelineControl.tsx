@@ -35,7 +35,7 @@ export function TimelineControl({
       ? activeSources
           .map((source) => SOURCE_LABELS[source] ?? source.toUpperCase())
           .join(' + ')
-      : 'GFW layers'
+      : 'active layers'
 
   return (
     <div className="timeline-control" aria-label="Timeline control">

@@ -30,6 +30,7 @@ type CreateGfwLayerArgs = {
     feature: Feature<Polygon, OutlineFeatureProperties> | null,
   ) => void
   onSelectFeature: (source: GfwSource, feature: GfwFeatureLike) => void
+  onTileError: () => void
   onTileLoad: (source: GfwSource, tile: LoadedGfwTile) => void
   selectedDate: string
   sarMatchFilter: SarMatchFilter
@@ -43,6 +44,7 @@ export function createGfwLayer({
   maxZoom,
   onHoverFeatureChange,
   onSelectFeature,
+  onTileError,
   onTileLoad,
   selectedDate,
   sarMatchFilter,
@@ -58,6 +60,9 @@ export function createGfwLayer({
     maxZoom,
     maxCacheSize,
     binary: false,
+
+    // Keep feature objects readable for click/hover inspection. Binary mode is
+    // faster, but it makes selected-cell evidence harder to work with here.
     filled: true,
     stroked: false,
     pickable: true,
@@ -87,6 +92,7 @@ export function createGfwLayer({
       }
     },
     onTileLoad: (tile) => onTileLoad(source, tile as LoadedGfwTile),
+    onTileError,
     updateTriggers: {
       getFillColor: [color],
     },

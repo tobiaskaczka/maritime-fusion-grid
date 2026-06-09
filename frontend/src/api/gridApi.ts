@@ -56,6 +56,7 @@ function getGfwSearchParams(
     date: selectedDate,
   })
 
+  // Only SAR has a match filter. AIS/fishing tiles ignore this option.
   if (source === 'sar' && options.sarMatchFilter) {
     params.set('matched', options.sarMatchFilter)
   }
@@ -71,6 +72,18 @@ export function getGfwTileTemplate(
   const params = getGfwSearchParams(source, selectedDate, options)
 
   return `${API_BASE_URL}/gfw/${source}/tiles/{z}/{x}/{y}.mvt?${params}`
+}
+
+export function getFusionTileTemplate(selectedDate: string) {
+  const params = new URLSearchParams({
+    date: selectedDate,
+
+    // Bump this when the scoring model changes so cached Fusion tiles do not
+    // keep showing old rankings in the browser.
+    scoreVersion: '2',
+  })
+
+  return `${API_BASE_URL}/gfw/fusion/tiles/{z}/{x}/{y}?${params}`
 }
 
 export async function getGfwConfig(): Promise<GfwConfig> {
@@ -135,6 +148,8 @@ export async function getFusionCell(
   selectedDate: string,
   options: GfwRequestOptions = {},
 ): Promise<FusionCell> {
+  // GFW cell ids are shaped like z/x/y/cell. The backend uses the same pieces
+  // to refetch the source tiles and return all known evidence for that cell.
   const [z, x, y, cell] = cellId.split('/')
 
   if (!z || !x || !y || !cell) {

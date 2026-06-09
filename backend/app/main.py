@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 
 from app.routes.gfw import router as gfw_router
 
+# Railway/local runs both load configuration from backend/.env. Production can
+# still override these values with real environment variables.
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 allowed_origins = [
@@ -21,6 +23,9 @@ allowed_origins = [
 app = FastAPI(title="Maritime Fusion Grid API")
 app.add_middleware(
     CORSMiddleware,
+
+    # Keeping the backend read-only for the MVP. The frontend only needs GET
+    # requests for config, tiles, bins, health checks, and selected-cell details.
     allow_origins=allowed_origins,
     allow_methods=["GET"],
     allow_headers=["*"],

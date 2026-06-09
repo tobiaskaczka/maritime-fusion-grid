@@ -29,6 +29,8 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function getGfwValue(properties: GfwProperties) {
+  // Source tiles use different value field names. Color by the first numeric
+  // field we recognize so the layer code does not need per-dataset branches.
   const candidateKeys = [
     'count',
     'detections',
@@ -62,6 +64,8 @@ export function getGfwColor(
   color: string,
 ): RgbaColor {
   const value = getGfwValue(properties)
+
+  // Log scaling keeps dense global cells from washing out the whole layer.
   const normalized = clamp(Math.log10(value + 1) / 5.35, 0, 1)
   const baseColor = hexToRgb(color)
   const lowColor = mixRgb(baseColor, [8, 15, 22], 0.66)

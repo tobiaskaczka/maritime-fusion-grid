@@ -11,7 +11,7 @@ import './LayerControl.css'
 const COLOR_OPTIONS = [
   '#f45bc4',
   '#f5df00',
-  '#38bdf8',
+  '#ff5544',
   '#2dd4bf',
   '#c084fc',
   '#fb923c',
@@ -58,6 +58,7 @@ export function LayerControl({
       }
     }
 
+    // Keep the color picker feeling like a small popover, not a persistent menu.
     document.addEventListener('pointerdown', closeOnOutsideClick)
 
     return () => {
@@ -130,11 +131,6 @@ export function LayerControl({
           <p className="layer-control__unit">{unit}</p>
           <div className="layer-control__scale" />
 
-          {/* <div className="layer-control__values">
-            {values.map((value) => (
-              <span key={value}>{value}</span>
-            ))}
-          </div> */}
           <div className="layer-control__values">
             {values.map((value, index) => (
               <span key={index}>{value}</span>

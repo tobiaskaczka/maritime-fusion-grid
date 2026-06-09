@@ -18,6 +18,8 @@ export type OutlineFeatureProperties = {
 }
 
 function collectPositions(value: unknown, positions: number[][]) {
+  // deck.gl can hand us geometry in a few nested shapes depending on the layer.
+  // Walk it generically so hover/selection outlines work for MVT and GeoJSON.
   if (value && typeof value === 'object' && 'coordinates' in value) {
     collectPositions(
       (value as { coordinates: unknown }).coordinates,
@@ -96,6 +98,8 @@ export function getOutlineFeature(
 ): Feature<Polygon, OutlineFeatureProperties> {
   const expandedBounds = getExpandedBounds(bounds)
 
+  // Draw outlines slightly larger than the cell so the border remains visible
+  // over bright heatmap colors.
   return {
     type: 'Feature',
     geometry: {
