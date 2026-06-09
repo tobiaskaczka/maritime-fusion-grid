@@ -230,17 +230,6 @@ This project does not prove illegal fishing, sanctions evasion, smuggling, or an
 
 It also does not currently ingest raw AIS or raw SAR data, partially due to not finding much accessible global OSINT in this area. The current version depends on external processed maritime datasets exposed through an API.
 
-## Known Limitations
-
-- Fusion scoring is rule-based and early.
-- There is no database yet.
-- There are no saved analyst notes or findings yet.
-- There is no user authentication.
-- There is no custom ingestion pipeline yet.
-- The app relies on external API availability and dataset permissions.
-
-These are acceptable for the current stage. The point is to have a working product foundation before adding heavier infrastructure.
-
 ## Next Steps
 
 In the future, useful features are:
@@ -252,16 +241,6 @@ In the future, useful features are:
 - add tests around the backend Fusion scoring functions
 - EEZ / Exclusive economic zone boundaries 
 - Filtering by flag / country
-
-## Docs
-
-Additional walkthroughs are in `docs/`:
-
-- `docs/architecture.md`
-- `docs/frontend-map-flow.md`
-- `docs/backend-fusion-flow.md`
-- `docs/codebase-guide.md`
-- `docs/deployment-notes.md`
 
 ## License
 
