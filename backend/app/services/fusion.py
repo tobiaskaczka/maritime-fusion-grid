@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from math import log1p
 from typing import Literal
@@ -185,25 +186,49 @@ def build_fusion_tile_features(
     analysis_start_date, analysis_end_date = get_analysis_window(selected_date)
 
     # Build the derived review layer from the same tile/cell ids as the raw
-    # source layers. That keeps click selection and side-panel evidence aligned.
-    ais_features = decode_gfw_tile_features(
-        request_gfw_tile_bytes("ais", z, x, y, selected_date),
-        z,
-        x,
-        y,
-    )
-    sar_matched_features = decode_gfw_tile_features(
-        request_gfw_tile_bytes("sar", z, x, y, selected_date, "matched"),
-        z,
-        x,
-        y,
-    )
-    sar_unmatched_features = decode_gfw_tile_features(
-        request_gfw_tile_bytes("sar", z, x, y, selected_date, "unmatched"),
-        z,
-        x,
-        y,
-    )
+    # source layers. Fetch the three upstream source tiles in parallel because
+    # production latency is dominated by network round trips, not local math.
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        ais_tile = executor.submit(
+            request_gfw_tile_bytes,
+            "ais",
+            z,
+            x,
+            y,
+            selected_date,
+        )
+        sar_matched_tile = executor.submit(
+            request_gfw_tile_bytes,
+            "sar",
+            z,
+            x,
+            y,
+            selected_date,
+            "matched",
+        )
+        sar_unmatched_tile = executor.submit(
+            request_gfw_tile_bytes,
+            "sar",
+            z,
+            x,
+            y,
+            selected_date,
+            "unmatched",
+        )
+
+        ais_features = decode_gfw_tile_features(ais_tile.result(), z, x, y)
+        sar_matched_features = decode_gfw_tile_features(
+            sar_matched_tile.result(),
+            z,
+            x,
+            y,
+        )
+        sar_unmatched_features = decode_gfw_tile_features(
+            sar_unmatched_tile.result(),
+            z,
+            x,
+            y,
+        )
     cells: dict[str, dict[str, object]] = {}
 
     # Merge source evidence by cell id. Geometry can come from any contributing

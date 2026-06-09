@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './TimelineControl.css'
 
 type TimelineControlProps = {
@@ -28,6 +29,15 @@ export function TimelineControl({
   onDateChange,
 }: TimelineControlProps) {
   const selectedIndex = Math.max(0, dates.indexOf(selectedDate))
+  const [draftSelection, setDraftSelection] = useState({
+    index: selectedIndex,
+    selectedDate,
+  })
+  const draftIndex =
+    draftSelection.selectedDate === selectedDate
+      ? draftSelection.index
+      : selectedIndex
+  const draftDate = dates[draftIndex] ?? selectedDate
   const firstDate = dates[0]
   const lastDate = dates[dates.length - 1]
   const sourceLabel =
@@ -36,6 +46,12 @@ export function TimelineControl({
           .map((source) => SOURCE_LABELS[source] ?? source.toUpperCase())
           .join(' + ')
       : 'active layers'
+
+  function commitDraftDate() {
+    if (draftDate !== selectedDate) {
+      onDateChange(draftDate)
+    }
+  }
 
   return (
     <div className="timeline-control" aria-label="Timeline control">
@@ -48,7 +64,7 @@ export function TimelineControl({
           type="date"
           value={selectedDate}
         />
-        <strong>{formatDisplayDate(selectedDate)}</strong>
+        <strong>{formatDisplayDate(draftDate)}</strong>
         <span>Daily {sourceLabel}</span>
       </div>
       <div className="timeline-meta">
@@ -61,10 +77,18 @@ export function TimelineControl({
         className="timeline-scrubber"
         max={dates.length - 1}
         min={0}
-        onChange={(event) => onDateChange(dates[Number(event.target.value)])}
+        onBlur={commitDraftDate}
+        onChange={(event) =>
+          setDraftSelection({
+            index: Number(event.target.value),
+            selectedDate,
+          })
+        }
+        onKeyUp={commitDraftDate}
+        onPointerUp={commitDraftDate}
         step={1}
         type="range"
-        value={selectedIndex}
+        value={draftIndex}
       />
     </div>
   )
