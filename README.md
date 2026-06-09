@@ -247,3 +247,9 @@ In the future, useful features are:
 This project uses the Apache License 2.0.
 
 External data sources, APIs, map tiles, and datasets remain governed by their own terms.
+
+## Data Attribution
+
+This project uses Global Fishing Watch APIs for fishing effort and SAR vessel detection data.
+
+Powered by [Global Fishing Watch](https://globalfishingwatch.org).
