@@ -33,6 +33,11 @@
   cursor: pointer;
 }
 
+.layer-control__toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .layer-control__toggle::after {
   position: absolute;
   top: 1px;
@@ -71,6 +76,11 @@
   cursor: pointer;
 }
 
+.layer-control__color-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .layer-control__color-button:hover,
 .layer-control__color-button[aria-expanded='true'] {
   color: #183c74;
@@ -87,9 +97,12 @@
   height: 10px;
   background: linear-gradient(
     to right,
-    color-mix(in srgb, var(--layer-color), transparent 88%),
-    color-mix(in srgb, var(--layer-color), white 58%),
-    var(--layer-color)
+    color-mix(in srgb, var(--layer-color), #081018 72%),
+    color-mix(in srgb, var(--layer-color), #081018 42%),
+    var(--layer-color),
+    color-mix(in srgb, var(--layer-color), #ffffff 36%),
+    color-mix(in srgb, var(--layer-color), #ffffff 68%),
+    #ffffff
   );
   border: 1px solid #c4ced9;
 }
@@ -99,6 +112,39 @@
   justify-content: space-between;
   color: #4d6f9b;
   font-size: 10px;
+}
+
+.layer-control__segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 3px;
+  background: #d8e0e8;
+  border: 1px solid #b8c5d2;
+  border-radius: 4px;
+}
+
+.layer-control__segmented button {
+  min-height: 24px;
+  padding: 0 6px;
+  color: #496b95;
+  font-size: 10px;
+  font-weight: 750;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.layer-control__segmented button:hover {
+  color: #183c74;
+  background: rgb(255 255 255 / 55%);
+}
+
+.layer-control__segmented button[aria-pressed='true'] {
+  color: #101820;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(31 51 73 / 18%);
 }
 
 .layer-control__color-popover {

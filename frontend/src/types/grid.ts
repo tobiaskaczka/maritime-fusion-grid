@@ -1,12 +1,21 @@
-import type { Feature, Polygon } from 'geojson'
+export type GfwProperties = Record<string, unknown>
 
-export type GridSource = 'ais' | 'night-lights' | 'radar'
+export type GfwSource = 'ais' | 'sar'
 
-export type GridCellProperties = {
-  id: string
-  source: GridSource
-  score: number
-  detectionCount: number
+export type SarMatchFilter = 'all' | 'matched' | 'unmatched'
+
+export type SelectedMapCell = {
+  cellId: string
+  kind: 'gfw'
+  primarySource: GfwSource
+  sources: Partial<Record<GfwSource, GfwProperties>>
 }
 
-export type GridCell = Feature<Polygon, GridCellProperties>
+export type FusionCell = {
+  cellId: string
+  cell: number
+  x: number
+  y: number
+  z: number
+  sources: Partial<Record<GfwSource, GfwProperties>>
+}

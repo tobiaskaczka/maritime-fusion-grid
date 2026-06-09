@@ -39,11 +39,37 @@
   line-height: 1.5;
 }
 
+.details-panel .selection-id {
+  margin: -4px 0 0;
+  color: #60706b;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono',
+    monospace;
+  font-size: 11px;
+}
+
 .cell-details {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 0;
+}
+
+.source-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.source-details + .source-details {
+  padding-top: 16px;
+  margin-top: 4px;
+  border-top: 1px solid #c7d1d8;
+}
+
+.source-details h3 {
+  margin: 0;
+  color: #183c74;
+  font-size: 13px;
 }
 
 .cell-details div {

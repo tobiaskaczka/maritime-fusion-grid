@@ -1,9 +1,13 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
-from app.routes.grid import router as grid_router
+from app.routes.gfw import router as gfw_router
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 allowed_origins = [
     origin.strip()
@@ -21,7 +25,7 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
-app.include_router(grid_router)
+app.include_router(gfw_router)
 
 
 @app.get("/health")

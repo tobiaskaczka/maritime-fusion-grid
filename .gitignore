@@ -6,6 +6,7 @@ desktop.ini
 # Editor and IDE files
 .idea/
 .vscode/
+.VSCodeCounter/
 *.code-workspace
 
 # Environment and secrets

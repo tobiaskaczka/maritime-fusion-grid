@@ -1,34 +1,44 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 import { PaintBucket } from 'lucide-react'
 import './LayerControl.css'
 
 const COLOR_OPTIONS = [
+  '#f45bc4',
   '#f5df00',
   '#38bdf8',
   '#2dd4bf',
   '#c084fc',
   '#fb923c',
-  '#ef4444',
 ]
 
 type LayerControlProps = {
   name: string
   unit: string
   enabled: boolean
+  disabled?: boolean
   color: string
   values: string[]
   onToggle: () => void
   onColorChange: (color: string) => void
+  children?: ReactNode
 }
 
 export function LayerControl({
   name,
   unit,
   enabled,
+  disabled = false,
   color,
   values,
   onToggle,
   onColorChange,
+  children,
 }: LayerControlProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState(false)
   const colorMenuRef = useRef<HTMLDivElement | null>(null)
@@ -63,6 +73,7 @@ export function LayerControl({
             className="layer-control__toggle"
             type="checkbox"
             checked={enabled}
+            disabled={disabled}
             onChange={onToggle}
           />
           {name}
@@ -73,6 +84,7 @@ export function LayerControl({
             className="layer-control__color-button"
             aria-expanded={colorPickerOpen}
             aria-label={`Change ${name} color`}
+            disabled={disabled}
             onClick={() => setColorPickerOpen((open) => !open)}
             title="Change layer color"
             type="button"
@@ -113,14 +125,24 @@ export function LayerControl({
         </div>
       </div>
 
-      <p className="layer-control__unit">{unit}</p>
-      <div className="layer-control__scale" />
+      {enabled && (
+        <>
+          <p className="layer-control__unit">{unit}</p>
+          <div className="layer-control__scale" />
 
-      <div className="layer-control__values">
-        {values.map((value) => (
-          <span key={value}>{value}</span>
-        ))}
-      </div>
+          {/* <div className="layer-control__values">
+            {values.map((value) => (
+              <span key={value}>{value}</span>
+            ))}
+          </div> */}
+          <div className="layer-control__values">
+            {values.map((value, index) => (
+              <span key={index}>{value}</span>
+            ))}
+          </div>
+          {children}
+        </>
+      )}
     </section>
   )
 }

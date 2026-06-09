@@ -16,7 +16,7 @@
 
 .coordinate-readout {
   position: absolute;
-  bottom: 12px;
+  bottom: 144px;
   left: 12px;
   z-index: 2;
   display: flex;
@@ -30,4 +30,10 @@
   background: rgb(10 10 10 / 88%);
   border: 1px solid #4a4a4a;
   border-radius: 3px;
+}
+
+@media (max-width: 960px) {
+  .coordinate-readout {
+    bottom: 152px;
+  }
 }
